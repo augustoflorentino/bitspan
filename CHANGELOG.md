@@ -4,6 +4,8 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+- the single-file form is now written to `dist/bitspan/bitspan.h`
+
 ## 0.1.0 - 2026-01-13
 
 First release.

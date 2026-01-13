@@ -34,7 +34,7 @@ cc app.c $(pkg-config --cflags --libs bitspan)
 
 ## Single-file form
 
-`scripts/amalgamate.sh` writes `dist/bitspan.h`. Copy it into your project and, in exactly
+`scripts/amalgamate.sh` writes `dist/bitspan/bitspan.h`. Copy it into your project and, in exactly
 one `.c` file:
 
 ```c

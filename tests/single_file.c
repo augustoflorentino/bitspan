@@ -1,5 +1,5 @@
 #define BITF_IMPLEMENTATION
-#include "bitspan.h"
+#include "bitspan/bitspan.h"
 
 int main(void)
 {

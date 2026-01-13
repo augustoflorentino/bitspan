@@ -5,6 +5,7 @@ Each release lists what changed, what updating means for existing code, and ever
 ## Unreleased
 
 - the single-file form is now written to `dist/bitspan/bitspan.h`
+- `bitf_get_unchecked` with a width of 0 and `BITF_SIGNED` no longer shifts out of range
 
 ## 0.1.0 - 2026-01-13
 

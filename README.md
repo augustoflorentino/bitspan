@@ -58,6 +58,8 @@ Conventions:
 - `bit_offset` counts bits from the start of the buffer; with `BITF_BE` bit 0 is the most
   significant bit of the first byte, with `BITF_LE` it is the least significant one
 - `bitf_get_many` returns signed fields sign-extended in the `uint64_t`; cast to `int64_t`
+- names ending in `_` (`bitf_mask_`, `bitf_extend_`) are internal helpers of the inline
+  readers and may change in any release
 - `bitf_get_unchecked` and friends do no checking: call `bitf_check` or
   `bitf_fields_check` first
 - the library never allocates and keeps no state; calls on different buffers can run in parallel

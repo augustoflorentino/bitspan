@@ -66,7 +66,7 @@ static inline uint64_t bitf_extend_(uint64_t value, unsigned bit_len)
 {
     uint64_t sign;
 
-    if (bit_len >= 64u)
+    if (bit_len == 0u || bit_len >= 64u)
         return value;
     sign = (uint64_t)1 << (bit_len - 1u);
     return (value ^ sign) - sign;

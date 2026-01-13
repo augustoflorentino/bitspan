@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(bitspan VERSION 0.1.0 DESCRIPTION "Read and write bit fields of any width at any bit offset, little or big endian" LANGUAGES C)
+project(bitspan VERSION 0.1.1 DESCRIPTION "Read and write bit fields of any width at any bit offset, little or big endian" LANGUAGES C)
 
 option(BITSPAN_BUILD_TESTS "Build tests" OFF)
 option(BITSPAN_BUILD_EXAMPLES "Build examples" OFF)

@@ -39,7 +39,7 @@ one `.c` file:
 
 ```c
 #define BITF_IMPLEMENTATION
-#include "bitspan.h"
+#include "bitspan/bitspan.h"
 ```
 
 Define `BITF_STATIC` as well to keep every function private to that file.

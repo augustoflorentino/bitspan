@@ -121,6 +121,55 @@ static inline uint64_t bitf_get_unchecked(const unsigned char *data, size_t bit_
     return (flags & BITF_SIGNED) ? bitf_extend_(value, bit_len) : value;
 }
 
+static inline void bitf_set_le_unchecked(unsigned char *data, size_t bit_offset, unsigned bit_len,
+                                         uint64_t value)
+{
+    unsigned char *p = data + bit_offset / 8u;
+    unsigned pos = (unsigned)(bit_offset % 8u);
+    unsigned left = bit_len;
+
+    while (left > 0u) {
+        unsigned take = 8u - pos < left ? 8u - pos : left;
+        unsigned mask = ((1u << take) - 1u) << pos;
+
+        *p = (unsigned char)((*p & ~mask) | (((unsigned)value << pos) & mask));
+        value >>= take;
+        left -= take;
+        pos = 0;
+        p++;
+    }
+}
+
+static inline void bitf_set_be_unchecked(unsigned char *data, size_t bit_offset, unsigned bit_len,
+                                         uint64_t value)
+{
+    unsigned char *p = data + bit_offset / 8u;
+    unsigned pos = (unsigned)(bit_offset % 8u);
+    unsigned left = bit_len;
+
+    while (left > 0u) {
+        unsigned take = 8u - pos < left ? 8u - pos : left;
+        unsigned shift = 8u - pos - take;
+        unsigned mask = ((1u << take) - 1u) << shift;
+        unsigned chunk = (unsigned)(value >> (left - take)) & ((1u << take) - 1u);
+
+        *p = (unsigned char)((*p & ~mask) | (chunk << shift));
+        left -= take;
+        pos = 0;
+        p++;
+    }
+}
+
+static inline void bitf_set_unchecked(unsigned char *data, size_t bit_offset, unsigned bit_len,
+                                      unsigned flags, uint64_t value)
+{
+    value &= bitf_mask_(bit_len);
+    if (flags & BITF_BE)
+        bitf_set_be_unchecked(data, bit_offset, bit_len, value);
+    else
+        bitf_set_le_unchecked(data, bit_offset, bit_len, value);
+}
+
 #ifdef __cplusplus
 }
 #endif

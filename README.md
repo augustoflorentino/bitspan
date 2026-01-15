@@ -7,7 +7,7 @@ Read and write integer fields of 1 to 64 bits at any bit offset of a byte buffer
   protocols, bitstreams)
 - signed fields of any width with sign extension (`BITF_SIGNED`)
 - checked calls that never read or write outside the buffer, plus inline unchecked
-  readers for hot loops after a single check
+  readers and writers for hot loops after a single check
 - batch read and write of a field list, validated once
 - no allocation, no dependencies beyond the C99 standard headers
 
@@ -59,9 +59,9 @@ Conventions:
   significant bit of the first byte, with `BITF_LE` it is the least significant one
 - `bitf_get_many` returns signed fields sign-extended in the `uint64_t`; cast to `int64_t`
 - names ending in `_` (`bitf_mask_`, `bitf_extend_`) are internal helpers of the inline
-  readers and may change in any release
-- `bitf_get_unchecked` and friends do no checking: call `bitf_check` or
-  `bitf_fields_check` first
+  readers and writers and may change in any release
+- `bitf_get_unchecked`, `bitf_set_unchecked` and friends do no checking: call `bitf_check`
+  or `bitf_fields_check` first; the writer keeps only the low `bit_len` bits of the value
 - the library never allocates and keeps no state; calls on different buffers can run in parallel
 
 ## Versioning

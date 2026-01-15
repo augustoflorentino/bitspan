@@ -44,53 +44,6 @@ int bitf_get_signed(const unsigned char *data, size_t data_len, size_t bit_offse
     return BITF_OK;
 }
 
-static void bitf_store_le(unsigned char *data, size_t bit_offset, unsigned bit_len, uint64_t value)
-{
-    unsigned char *p = data + bit_offset / 8u;
-    unsigned pos = (unsigned)(bit_offset % 8u);
-    unsigned left = bit_len;
-
-    while (left > 0u) {
-        unsigned take = 8u - pos < left ? 8u - pos : left;
-        unsigned mask = ((1u << take) - 1u) << pos;
-
-        *p = (unsigned char)((*p & ~mask) | (((unsigned)value << pos) & mask));
-        value >>= take;
-        left -= take;
-        pos = 0;
-        p++;
-    }
-}
-
-static void bitf_store_be(unsigned char *data, size_t bit_offset, unsigned bit_len, uint64_t value)
-{
-    unsigned char *p = data + bit_offset / 8u;
-    unsigned pos = (unsigned)(bit_offset % 8u);
-    unsigned left = bit_len;
-
-    while (left > 0u) {
-        unsigned take = 8u - pos < left ? 8u - pos : left;
-        unsigned shift = 8u - pos - take;
-        unsigned mask = ((1u << take) - 1u) << shift;
-        unsigned chunk = (unsigned)(value >> (left - take)) & ((1u << take) - 1u);
-
-        *p = (unsigned char)((*p & ~mask) | (chunk << shift));
-        left -= take;
-        pos = 0;
-        p++;
-    }
-}
-
-static void bitf_store(unsigned char *data, size_t bit_offset, unsigned bit_len, unsigned flags,
-                       uint64_t value)
-{
-    value &= bitf_mask_(bit_len);
-    if (flags & BITF_BE)
-        bitf_store_be(data, bit_offset, bit_len, value);
-    else
-        bitf_store_le(data, bit_offset, bit_len, value);
-}
-
 static int bitf_fits(uint64_t value, unsigned bit_len, unsigned flags)
 {
     uint64_t high;
@@ -115,7 +68,7 @@ int bitf_set(unsigned char *data, size_t data_len, size_t bit_offset, unsigned b
         return status;
     if (!bitf_fits(value, bit_len, flags))
         return BITF_ERR_RANGE;
-    bitf_store(data, bit_offset, bit_len, flags, value);
+    bitf_set_unchecked(data, bit_offset, bit_len, flags, value);
     return BITF_OK;
 }
 
@@ -188,7 +141,8 @@ int bitf_set_many(unsigned char *data, size_t data_len, const bitf_field_t *fiel
         if (!bitf_fits(values[i], fields[i].bit_len, fields[i].flags))
             return BITF_ERR_RANGE;
     for (i = 0; i < fields_len; i++)
-        bitf_store(data, fields[i].bit_offset, fields[i].bit_len, fields[i].flags, values[i]);
+        bitf_set_unchecked(data, fields[i].bit_offset, fields[i].bit_len, fields[i].flags,
+                           values[i]);
     return BITF_OK;
 }
 

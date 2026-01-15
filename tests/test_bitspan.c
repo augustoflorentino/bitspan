@@ -217,9 +217,32 @@ static void test_version(void)
     CHECK(BITF_VERSION == BITF_VERSION_MAJOR * 10000 + BITF_VERSION_MINOR * 100 + BITF_VERSION_PATCH);
 }
 
+static void test_unchecked_writes(void)
+{
+    static const unsigned flag_sets[] = {BITF_LE, BITF_BE};
+    unsigned char got[BUF_LEN];
+    unsigned char want[BUF_LEN];
+    unsigned f;
+    unsigned len;
+    size_t off;
+
+    for (f = 0; f < 2u; f++)
+        for (len = 1; len <= 64u; len++)
+            for (off = 0; off + len <= BUF_LEN * 8u; off += 3u) {
+                uint64_t value = rng_next();
+
+                fill_random(got, BUF_LEN);
+                memcpy(want, got, BUF_LEN);
+                bitf_set_unchecked(got, off, len, flag_sets[f], value);
+                ref_set(want, off, len, flag_sets[f], truncate_bits(value, len));
+                CHECK(memcmp(got, want, BUF_LEN) == 0);
+            }
+}
+
 int main(void)
 {
     test_version();
+    test_unchecked_writes();
     test_exhaustive_get_set();
     test_known_values();
     test_signed_range();

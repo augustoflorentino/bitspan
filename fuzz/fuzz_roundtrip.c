@@ -27,6 +27,7 @@ int LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
 {
     unsigned char buf[MAX_BUF];
     unsigned char copy[MAX_BUF];
+    unsigned char raw[MAX_BUF];
     size_t buf_len;
     size_t off;
     size_t pos;
@@ -62,6 +63,9 @@ int LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
         abort();
     require(bitf_get(copy, buf_len, off, len, flags & ~(unsigned)BITF_SIGNED, &back) == BITF_OK);
     require(back == fresh);
+    memcpy(raw, buf, buf_len);
+    bitf_set_unchecked(raw, off, len, flags, ~value);
+    require(memcmp(raw, copy, buf_len) == 0);
     for (pos = 0; pos < buf_len * 8u; pos++)
         if (!bit_inside(pos, off, len))
             require(raw_bit(copy, pos, flags) == raw_bit(buf, pos, flags));

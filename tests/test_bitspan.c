@@ -211,8 +211,15 @@ static void test_many_range_is_atomic(void)
     CHECK(buf[0] == 0x11 && buf[1] == 0x22);
 }
 
+static void test_version(void)
+{
+    CHECK(bitf_version() == BITF_VERSION);
+    CHECK(BITF_VERSION == BITF_VERSION_MAJOR * 10000 + BITF_VERSION_MINOR * 100 + BITF_VERSION_PATCH);
+}
+
 int main(void)
 {
+    test_version();
     test_exhaustive_get_set();
     test_known_values();
     test_signed_range();

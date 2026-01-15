@@ -8,7 +8,7 @@ lib=$2
 root=$(cd "$(dirname "$0")/.." && pwd)
 baseline=$root/abi/bitspan.abi
 
-major=$(sed -n 's/^project(bitspan VERSION \([0-9]*\)\..*/\1/p' "$root/CMakeLists.txt")
+major=$(sed -n 's/^#define BITF_VERSION_MAJOR \([0-9]*\)$/\1/p' "$root/include/bitspan/bitspan.h")
 soname=$(readelf -d "$lib" | sed -n 's/.*Library soname: \[\(.*\)\]/\1/p')
 if [ "$soname" != "libbitspan.so.$major" ]; then
     echo "soname $soname does not match major version $major" >&2

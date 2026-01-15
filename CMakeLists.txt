@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
-project(bitspan VERSION 0.1.1 DESCRIPTION "Read and write bit fields of any width at any bit offset, little or big endian" LANGUAGES C)
+file(STRINGS include/bitspan/bitspan.h BITF_VERSION_LINES REGEX "^#define BITF_VERSION_(MAJOR|MINOR|PATCH) ")
+string(REGEX REPLACE ".*MAJOR ([0-9]+).*MINOR ([0-9]+).*PATCH ([0-9]+).*" "\\1.\\2.\\3" BITF_HEADER_VERSION "${BITF_VERSION_LINES}")
+project(bitspan VERSION ${BITF_HEADER_VERSION} DESCRIPTION "Read and write bit fields of any width at any bit offset, little or big endian" LANGUAGES C)
 
 option(BITSPAN_BUILD_TESTS "Build tests" OFF)
 option(BITSPAN_BUILD_EXAMPLES "Build examples" OFF)

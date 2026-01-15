@@ -22,6 +22,11 @@
 extern "C" {
 #endif
 
+#define BITF_VERSION_MAJOR 0
+#define BITF_VERSION_MINOR 1
+#define BITF_VERSION_PATCH 1
+#define BITF_VERSION (BITF_VERSION_MAJOR * 10000 + BITF_VERSION_MINOR * 100 + BITF_VERSION_PATCH)
+
 #define BITF_OK 0
 #define BITF_ERR_ARG 1
 #define BITF_ERR_BOUNDS 2
@@ -56,6 +61,7 @@ BITF_API int bitf_get_many(const unsigned char *data, size_t data_len,
 BITF_API int bitf_set_many(unsigned char *data, size_t data_len, const bitf_field_t *fields,
                            size_t fields_len, const uint64_t *values);
 BITF_API const char *bitf_strerror(int status);
+BITF_API int bitf_version(void);
 
 static inline uint64_t bitf_mask_(unsigned bit_len)
 {

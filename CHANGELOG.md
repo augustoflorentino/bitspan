@@ -4,6 +4,9 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+- `BITF_VERSION_MAJOR`, `BITF_VERSION_MINOR`, `BITF_VERSION_PATCH`, `BITF_VERSION` and
+  `bitf_version()`, to compare the header with the library linked at run time
+
 ## 0.1.1 - 2026-01-13
 
 - the single-file form is now written to `dist/bitspan/bitspan.h`

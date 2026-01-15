@@ -207,3 +207,8 @@ const char *bitf_strerror(int status)
         return "unknown status";
     }
 }
+
+int bitf_version(void)
+{
+    return BITF_VERSION;
+}

@@ -4,6 +4,11 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+The API is now stable: see Versioning in the README for what that covers.
+
+- the header is checked to build as C++ with `-Wconversion -Wold-style-cast`
+- security fixes are promised for 6 months to the previous major version
+
 ## 0.3.0 - 2026-01-15
 
 - `BITF_VERSION_MAJOR`, `BITF_VERSION_MINOR`, `BITF_VERSION_PATCH`, `BITF_VERSION` and

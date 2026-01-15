@@ -66,8 +66,15 @@ Conventions:
 
 ## Versioning
 
-Semantic Versioning. Compatible releases bump the minor version; incompatible ones bump the
-major version and the soname. See [CHANGELOG.md](CHANGELOG.md).
+Semantic Versioning, from 1.0.0 on. Within a major version:
+
+- the API and ABI only grow: no function, macro, flag or struct member is removed or changes
+  meaning, and the layout of `bitf_field_t` stays the same
+- a function due to go away is marked deprecated in the CHANGELOG first and removed only in the
+  next major version, together with a note on what to use instead
+- names ending in `_` are not covered
+
+Incompatible releases bump the major version and the soname. See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

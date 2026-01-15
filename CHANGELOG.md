@@ -4,6 +4,8 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+## 0.3.0 - 2026-01-15
+
 - `BITF_VERSION_MAJOR`, `BITF_VERSION_MINOR`, `BITF_VERSION_PATCH`, `BITF_VERSION` and
   `bitf_version()`, to compare the header with the library linked at run time
 - `bitf_set_unchecked`, `bitf_set_le_unchecked`, `bitf_set_be_unchecked`: inline writers

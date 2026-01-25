@@ -11,6 +11,11 @@ Read and write integer fields of 1 to 64 bits at any bit offset of a byte buffer
 - batch read and write of a field list, validated once
 - no allocation, no dependencies beyond the C99 standard headers
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/layout-dark.svg">
+  <img src="docs/images/layout-light.svg" alt="A six-byte report read with bitf_get_many: two one-bit buttons, a signed 8-bit trigger, a signed 16-bit stick and a 16-bit counter" width="820">
+</picture>
+
 ## Build and install
 
 ```sh

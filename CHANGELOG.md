@@ -4,6 +4,8 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+## 1.1.2 - 2026-01-25
+
 - `bitf_copy`: copy any number of bits from one buffer to another, at any bit offset on
   either side
 - `bitf_copy` within one buffer, with the destination after an overlapping source, no

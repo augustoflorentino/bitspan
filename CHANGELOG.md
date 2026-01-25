@@ -4,6 +4,9 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+- `bitf_copy`: copy any number of bits from one buffer to another, at any bit offset on
+  either side
+
 ## 1.0.0 - 2026-01-25
 
 The API is now stable: see Versioning in the README for what that covers.

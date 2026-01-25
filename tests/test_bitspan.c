@@ -239,10 +239,45 @@ static void test_unchecked_writes(void)
             }
 }
 
+static void test_copy(void)
+{
+    static const unsigned flag_sets[] = {BITF_LE, BITF_BE};
+    unsigned char src[BUF_LEN];
+    unsigned char got[BUF_LEN];
+    unsigned char want[BUF_LEN];
+    size_t so;
+    size_t dof;
+    size_t n;
+    size_t i;
+    unsigned f;
+
+    for (f = 0; f < 2u; f++)
+        for (so = 0; so < 20u; so += 3u)
+            for (dof = 0; dof < 20u; dof += 5u)
+                for (n = 0; dof + n <= BUF_LEN * 8u && so + n <= BUF_LEN * 8u; n += 7u) {
+                    fill_random(src, BUF_LEN);
+                    fill_random(got, BUF_LEN);
+                    memcpy(want, got, BUF_LEN);
+                    for (i = 0; i < n; i++)
+                        ref_put_bit(want, dof + i, flag_sets[f], ref_bit(src, so + i, flag_sets[f]));
+                    CHECK(bitf_copy(got, BUF_LEN, dof, src, BUF_LEN, so, n, flag_sets[f]) == BITF_OK);
+                    CHECK(memcmp(got, want, BUF_LEN) == 0);
+                }
+    CHECK(bitf_copy(got, BUF_LEN, 1, src, BUF_LEN, 0, BUF_LEN * 8u, BITF_LE) == BITF_ERR_BOUNDS);
+    CHECK(bitf_copy(got, BUF_LEN, 0, src, BUF_LEN, 1, BUF_LEN * 8u, BITF_LE) == BITF_ERR_BOUNDS);
+    CHECK(bitf_copy(got, BUF_LEN, BUF_LEN * 8u, src, BUF_LEN, 0, 0, BITF_LE) == BITF_OK);
+    CHECK(bitf_copy(got, BUF_LEN, BUF_LEN * 8u + 8u, src, BUF_LEN, 0, 0, BITF_LE) == BITF_ERR_BOUNDS);
+    CHECK(bitf_copy(got, BUF_LEN, BUF_LEN * 8u + 1u, src, BUF_LEN, 0, 0, BITF_LE) == BITF_ERR_BOUNDS);
+    CHECK(bitf_copy(got, BUF_LEN, 0, src, BUF_LEN, 0, SIZE_MAX, BITF_LE) == BITF_ERR_BOUNDS);
+    CHECK(bitf_copy(got, BUF_LEN, 0, src, BUF_LEN, 0, 8, BITF_SIGNED) == BITF_ERR_ARG);
+    CHECK(bitf_copy(NULL, 0, 0, src, BUF_LEN, 0, 0, BITF_LE) == BITF_ERR_ARG);
+}
+
 int main(void)
 {
     test_version();
     test_unchecked_writes();
+    test_copy();
     test_exhaustive_get_set();
     test_known_values();
     test_signed_range();

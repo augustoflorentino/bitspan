@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If bitspan helped your work, please cite it with these details."
+type: software
+title: bitspan
+abstract: "C99 library that reads and writes integer fields of 1 to 64 bits at any bit offset of a byte buffer"
+authors:
+  - family-names: Florentino
+    given-names: Augusto
+license: MIT
+repository-code: "https://github.com/augustoflorentino/bitspan"
+keywords:
+  - c
+  - c99
+  - library
+  - binary-parsing
+  - bit-manipulation
+  - bitspan
+  - endianness
+  - hid
+  - single-header

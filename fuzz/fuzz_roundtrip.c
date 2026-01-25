@@ -23,6 +23,21 @@ static unsigned raw_bit(const unsigned char *buf, size_t pos, unsigned flags)
     return (buf[pos / 8u] >> bit) & 1u;
 }
 
+static void copy_check(const unsigned char *src, size_t len, size_t src_off, size_t count,
+                       unsigned flags)
+{
+    unsigned char dst[MAX_BUF] = {0};
+    size_t dst_off = src_off / 3u;
+    size_t i;
+
+    if (bitf_copy(dst, len, dst_off, src, len, src_off, count, flags) != BITF_OK) {
+        require(src_off + count > len * 8u || dst_off + count > len * 8u);
+        return;
+    }
+    for (i = 0; i < count; i++)
+        require(raw_bit(dst, dst_off + i, flags) == raw_bit(src, src_off + i, flags));
+}
+
 int LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
 {
     unsigned char buf[MAX_BUF];
@@ -45,6 +60,7 @@ int LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
     flags = data[3] % 8u;
     buf_len = size - 4 < MAX_BUF ? size - 4 : MAX_BUF;
     memcpy(buf, data + 4, buf_len);
+    copy_check(buf, buf_len, off, (size_t)data[2] * 3u, flags & BITF_BE);
 
     status = bitf_get(buf, buf_len, off, len, flags, &value);
     require(status == bitf_check(buf_len, off, len, flags));

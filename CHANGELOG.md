@@ -4,6 +4,8 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+## 1.0.0 - 2026-01-25
+
 The API is now stable: see Versioning in the README for what that covers.
 
 - the header is checked to build as C++ with `-Wconversion -Wold-style-cast`

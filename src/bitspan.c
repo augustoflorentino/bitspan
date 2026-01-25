@@ -78,45 +78,74 @@ int bitf_set_signed(unsigned char *data, size_t data_len, size_t bit_offset,
     return bitf_set(data, data_len, bit_offset, bit_len, flags | BITF_SIGNED, (uint64_t)value);
 }
 
-int bitf_fields_check(const bitf_field_t *fields, size_t fields_len,
-                               size_t *out_min_data_len)
+static size_t bitf_field_end(const bitf_field_t *f)
+{
+    size_t first_byte = f->bit_offset / 8u;
+    size_t nbytes = (f->bit_offset % 8u + f->bit_len + 7u) / 8u;
+
+    return first_byte > SIZE_MAX - nbytes ? SIZE_MAX : first_byte + nbytes;
+}
+
+static int bitf_field_valid(const bitf_field_t *f)
+{
+    if (f->bit_len == 0u || f->bit_len > BITF_MAX_BITS
+        || (f->flags & ~(unsigned)BITF_FLAGS_MASK) != 0u)
+        return BITF_ERR_ARG;
+    return bitf_field_end(f) == SIZE_MAX ? BITF_ERR_BOUNDS : BITF_OK;
+}
+
+static int bitf_fail(int status, size_t index, size_t *out_bad_index)
+{
+    if (out_bad_index != NULL)
+        *out_bad_index = index;
+    return status;
+}
+
+int bitf_fields_check(const bitf_field_t *fields, size_t fields_len, size_t *out_min_data_len,
+                      size_t *out_bad_index)
 {
     size_t min_len = 0;
     size_t i;
+    int status;
 
     if ((fields == NULL && fields_len > 0u) || out_min_data_len == NULL)
         return BITF_ERR_ARG;
     for (i = 0; i < fields_len; i++) {
-        const bitf_field_t *f = &fields[i];
-        size_t first_byte = f->bit_offset / 8u;
-        size_t nbytes = (f->bit_offset % 8u + f->bit_len + 7u) / 8u;
-
-        if (f->bit_len == 0u || f->bit_len > BITF_MAX_BITS
-            || (f->flags & ~(unsigned)BITF_FLAGS_MASK) != 0u)
-            return BITF_ERR_ARG;
-        if (first_byte > SIZE_MAX - nbytes)
-            return BITF_ERR_BOUNDS;
-        if (first_byte + nbytes > min_len)
-            min_len = first_byte + nbytes;
+        status = bitf_field_valid(&fields[i]);
+        if (status != BITF_OK)
+            return bitf_fail(status, i, out_bad_index);
+        if (bitf_field_end(&fields[i]) > min_len)
+            min_len = bitf_field_end(&fields[i]);
     }
     *out_min_data_len = min_len;
     return BITF_OK;
 }
 
-int bitf_get_many(const unsigned char *data, size_t data_len,
-                           const bitf_field_t *fields, size_t fields_len, uint64_t *out_values)
+static int bitf_fields_fit(size_t data_len, const bitf_field_t *fields, size_t fields_len,
+                           size_t *out_bad_index)
 {
     size_t min_len;
+    size_t i;
+    int status = bitf_fields_check(fields, fields_len, &min_len, out_bad_index);
+
+    if (status != BITF_OK || min_len <= data_len)
+        return status;
+    for (i = 0; bitf_field_end(&fields[i]) <= data_len; i++)
+        ;
+    return bitf_fail(BITF_ERR_BOUNDS, i, out_bad_index);
+}
+
+int bitf_get_many(const unsigned char *data, size_t data_len, const bitf_field_t *fields,
+                  size_t fields_len, uint64_t *out_values, size_t *out_bad_index)
+{
     size_t i;
     int status;
 
     if ((data == NULL || out_values == NULL) && fields_len > 0u)
         return BITF_ERR_ARG;
-    status = bitf_fields_check(fields, fields_len, &min_len);
+    status = bitf_fields_fit(data_len, fields, fields_len, out_bad_index);
     if (status != BITF_OK)
         return status;
-    if (min_len > data_len)
-        return BITF_ERR_BOUNDS;
     for (i = 0; i < fields_len; i++)
         out_values[i] = bitf_get_unchecked(data, fields[i].bit_offset, fields[i].bit_len,
                                            fields[i].flags);
@@ -124,22 +153,19 @@ int bitf_get_many(const unsigned char *data, size_t data_len,
 }
 
 int bitf_set_many(unsigned char *data, size_t data_len, const bitf_field_t *fields,
-                           size_t fields_len, const uint64_t *values)
+                  size_t fields_len, const uint64_t *values, size_t *out_bad_index)
 {
-    size_t min_len;
     size_t i;
     int status;
 
     if ((data == NULL || values == NULL) && fields_len > 0u)
         return BITF_ERR_ARG;
-    status = bitf_fields_check(fields, fields_len, &min_len);
+    status = bitf_fields_fit(data_len, fields, fields_len, out_bad_index);
     if (status != BITF_OK)
         return status;
-    if (min_len > data_len)
-        return BITF_ERR_BOUNDS;
     for (i = 0; i < fields_len; i++)
         if (!bitf_fits(values[i], fields[i].bit_len, fields[i].flags))
-            return BITF_ERR_RANGE;
+            return bitf_fail(BITF_ERR_RANGE, i, out_bad_index);
     for (i = 0; i < fields_len; i++)
         bitf_set_unchecked(data, fields[i].bit_offset, fields[i].bit_len, fields[i].flags,
                            values[i]);

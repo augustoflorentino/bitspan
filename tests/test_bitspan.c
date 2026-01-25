@@ -187,18 +187,25 @@ static void test_many(void)
     static const uint64_t values[] = {1, 0x55, (uint64_t)-300, 0xabc, (uint64_t)-2};
     unsigned char buf[5] = {0};
     uint64_t out[5];
+    static const bitf_field_t bad[] = {{0, 8, BITF_LE}, {8, 0, BITF_LE}, {16, 8, 0x10}};
     size_t min_len = 0;
+    size_t bad_index = 99;
     size_t i;
 
-    CHECK(bitf_fields_check(fields, 5, &min_len) == BITF_OK && min_len == 5);
-    CHECK(bitf_set_many(buf, sizeof(buf), fields, 5, values) == BITF_OK);
-    CHECK(bitf_get_many(buf, sizeof(buf), fields, 5, out) == BITF_OK);
+    CHECK(bitf_fields_check(fields, 5, &min_len, NULL) == BITF_OK && min_len == 5);
+    CHECK(bitf_set_many(buf, sizeof(buf), fields, 5, values, NULL) == BITF_OK);
+    CHECK(bitf_get_many(buf, sizeof(buf), fields, 5, out, &bad_index) == BITF_OK);
+    CHECK(bad_index == 99);
     for (i = 0; i < 5; i++)
         CHECK(out[i] == values[i]);
-    CHECK(bitf_get_many(buf, 4, fields, 5, out) == BITF_ERR_BOUNDS);
-    CHECK(bitf_get_many(buf, sizeof(buf), NULL, 0, NULL) == BITF_OK);
-    CHECK(bitf_fields_check(NULL, 0, &min_len) == BITF_OK && min_len == 0);
-    CHECK(bitf_fields_check(fields, 5, NULL) == BITF_ERR_ARG);
+    CHECK(bitf_get_many(buf, 4, fields, 5, out, &bad_index) == BITF_ERR_BOUNDS);
+    CHECK(bad_index == 3);
+    CHECK(bitf_set_many(buf, 2, fields, 5, values, &bad_index) == BITF_ERR_BOUNDS);
+    CHECK(bad_index == 2);
+    CHECK(bitf_fields_check(bad, 3, &min_len, &bad_index) == BITF_ERR_ARG && bad_index == 1);
+    CHECK(bitf_get_many(buf, sizeof(buf), NULL, 0, NULL, NULL) == BITF_OK);
+    CHECK(bitf_fields_check(NULL, 0, &min_len, NULL) == BITF_OK && min_len == 0);
+    CHECK(bitf_fields_check(fields, 5, NULL, NULL) == BITF_ERR_ARG);
 }
 
 static void test_many_range_is_atomic(void)
@@ -206,8 +213,10 @@ static void test_many_range_is_atomic(void)
     static const bitf_field_t fields[] = {{0, 8, BITF_LE}, {8, 4, BITF_LE}};
     static const uint64_t values[] = {0xaa, 0x1f};
     unsigned char buf[2] = {0x11, 0x22};
+    size_t bad_index = 0;
 
-    CHECK(bitf_set_many(buf, sizeof(buf), fields, 2, values) == BITF_ERR_RANGE);
+    CHECK(bitf_set_many(buf, sizeof(buf), fields, 2, values, &bad_index) == BITF_ERR_RANGE);
+    CHECK(bad_index == 1);
     CHECK(buf[0] == 0x11 && buf[1] == 0x22);
 }
 

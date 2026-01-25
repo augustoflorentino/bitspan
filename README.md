@@ -63,6 +63,8 @@ Conventions:
   `BITF_ERR_ARG` (null pointer, width 0 or above 64, unknown flag), `BITF_ERR_BOUNDS` (field
   outside the buffer), `BITF_ERR_RANGE` (value does not fit the field width)
 - on error nothing is written: `bitf_set_many` checks every field and value before writing
+- the list calls take an optional `out_bad_index`: when the error comes from a field, it gets
+  the index of the first field that failed
 - `bit_offset` counts bits from the start of the buffer; with `BITF_BE` bit 0 is the most
   significant bit of the first byte, with `BITF_LE` it is the least significant one
 - `bitf_get_many` returns signed fields sign-extended in the `uint64_t`; cast to `int64_t`

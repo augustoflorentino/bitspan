@@ -4,6 +4,17 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+Incompatible with 1.x: the soname is now `libbitspan.so.2`.
+
+- `bitf_fields_check`, `bitf_get_many` and `bitf_set_many` take a last argument,
+  `size_t *out_bad_index`, which receives the index of the field that failed. With a long
+  list, the error code alone did not say which field was out of the buffer or out of range
+
+### Upgrading
+
+Add `NULL` as the last argument to keep the old behaviour, or pass a `size_t` to learn which
+field failed.
+
 ## 1.1.2 - 2026-01-25
 
 - `bitf_copy`: copy any number of bits from one buffer to another, at any bit offset on

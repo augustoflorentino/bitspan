@@ -14,12 +14,13 @@ int main(void)
     };
     static const char *const names[] = {"button a", "button b", "trigger", "stick x", "counter"};
     uint64_t values[5];
+    size_t bad = 0;
     int status;
     int i;
 
-    status = bitf_get_many(report, sizeof(report), fields, 5, values);
+    status = bitf_get_many(report, sizeof(report), fields, 5, values, &bad);
     if (status != BITF_OK) {
-        fprintf(stderr, "error: %s\n", bitf_strerror(status));
+        fprintf(stderr, "error in %s: %s\n", names[bad], bitf_strerror(status));
         return 1;
     }
     for (i = 0; i < 5; i++) {

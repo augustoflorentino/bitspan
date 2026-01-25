@@ -55,11 +55,12 @@ BITF_API int bitf_set_signed(unsigned char *data, size_t data_len, size_t bit_of
                              unsigned bit_len, unsigned flags, int64_t value);
 BITF_API int bitf_check(size_t data_len, size_t bit_offset, unsigned bit_len, unsigned flags);
 BITF_API int bitf_fields_check(const bitf_field_t *fields, size_t fields_len,
-                               size_t *out_min_data_len);
+                               size_t *out_min_data_len, size_t *out_bad_index);
 BITF_API int bitf_get_many(const unsigned char *data, size_t data_len,
-                           const bitf_field_t *fields, size_t fields_len, uint64_t *out_values);
+                           const bitf_field_t *fields, size_t fields_len, uint64_t *out_values,
+                           size_t *out_bad_index);
 BITF_API int bitf_set_many(unsigned char *data, size_t data_len, const bitf_field_t *fields,
-                           size_t fields_len, const uint64_t *values);
+                           size_t fields_len, const uint64_t *values, size_t *out_bad_index);
 BITF_API int bitf_copy(unsigned char *dst, size_t dst_len, size_t dst_offset,
                        const unsigned char *src, size_t src_len, size_t src_offset,
                        size_t bit_count, unsigned flags);

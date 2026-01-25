@@ -273,11 +273,38 @@ static void test_copy(void)
     CHECK(bitf_copy(NULL, 0, 0, src, BUF_LEN, 0, 0, BITF_LE) == BITF_ERR_ARG);
 }
 
+static void test_copy_overlap(void)
+{
+    static const unsigned flag_sets[] = {BITF_LE, BITF_BE};
+    unsigned char got[BUF_LEN];
+    unsigned char want[BUF_LEN];
+    unsigned char orig[BUF_LEN];
+    size_t so;
+    size_t dof;
+    size_t n;
+    size_t i;
+    unsigned f;
+
+    for (f = 0; f < 2u; f++)
+        for (so = 0; so < 30u; so += 7u)
+            for (dof = 0; dof < 30u; dof += 3u)
+                for (n = 0; dof + n <= BUF_LEN * 8u && so + n <= BUF_LEN * 8u; n += 11u) {
+                    fill_random(orig, BUF_LEN);
+                    memcpy(got, orig, BUF_LEN);
+                    memcpy(want, orig, BUF_LEN);
+                    for (i = 0; i < n; i++)
+                        ref_put_bit(want, dof + i, flag_sets[f], ref_bit(orig, so + i, flag_sets[f]));
+                    CHECK(bitf_copy(got, BUF_LEN, dof, got, BUF_LEN, so, n, flag_sets[f]) == BITF_OK);
+                    CHECK(memcmp(got, want, BUF_LEN) == 0);
+                }
+}
+
 int main(void)
 {
     test_version();
     test_unchecked_writes();
     test_copy();
+    test_copy_overlap();
     test_exhaustive_get_set();
     test_known_values();
     test_signed_range();

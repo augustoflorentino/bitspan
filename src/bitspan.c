@@ -158,6 +158,20 @@ static int bitf_range_check(size_t data_len, size_t bit_offset, size_t bit_count
     return BITF_OK;
 }
 
+static int bitf_copy_backward(unsigned char *data, size_t dst_offset, size_t src_offset,
+                              size_t bit_count, unsigned flags)
+{
+    unsigned chunk;
+
+    while (bit_count > 0u) {
+        chunk = bit_count < 64u ? (unsigned)bit_count : 64u;
+        bit_count -= chunk;
+        bitf_set_unchecked(data, dst_offset + bit_count, chunk, flags,
+                           bitf_get_unchecked(data, src_offset + bit_count, chunk, flags));
+    }
+    return BITF_OK;
+}
+
 int bitf_copy(unsigned char *dst, size_t dst_len, size_t dst_offset, const unsigned char *src,
               size_t src_len, size_t src_offset, size_t bit_count, unsigned flags)
 {
@@ -168,6 +182,8 @@ int bitf_copy(unsigned char *dst, size_t dst_len, size_t dst_offset, const unsig
     if (bitf_range_check(dst_len, dst_offset, bit_count) != BITF_OK
         || bitf_range_check(src_len, src_offset, bit_count) != BITF_OK)
         return BITF_ERR_BOUNDS;
+    if (dst == src && dst_offset > src_offset)
+        return bitf_copy_backward(dst, dst_offset, src_offset, bit_count, flags);
     while (bit_count > 0u) {
         chunk = bit_count < 64u ? (unsigned)bit_count : 64u;
         bitf_set_unchecked(dst, dst_offset, chunk, flags,

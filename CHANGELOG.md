@@ -6,6 +6,8 @@ Each release lists what changed, what updating means for existing code, and ever
 
 - `bitf_copy`: copy any number of bits from one buffer to another, at any bit offset on
   either side
+- `bitf_copy` within one buffer, with the destination after an overlapping source, no
+  longer copies bits it has already overwritten
 
 ## 1.0.0 - 2026-01-25
 

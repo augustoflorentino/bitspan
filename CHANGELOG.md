@@ -4,6 +4,8 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+## 2.0.0 - 2026-01-25
+
 Incompatible with 1.x: the soname is now `libbitspan.so.2`.
 
 - `bitf_fields_check`, `bitf_get_many` and `bitf_set_many` take a last argument,

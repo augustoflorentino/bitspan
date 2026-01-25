@@ -1,0 +1,37 @@
+name: Wrong value or crash
+description: A field reads or writes something it should not
+body:
+  - type: input
+    id: version
+    attributes:
+      label: bitspan version
+      placeholder: 3.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: buffer
+    attributes:
+      label: Buffer
+      description: The bytes, in hex, and their length
+      placeholder: 05 80 ff 7f 34 12 (6 bytes)
+    validations:
+      required: true
+  - type: textarea
+    id: call
+    attributes:
+      label: Call
+      description: The function, bit offset, width and flags
+      render: c
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: What you expected and what you got
+    validations:
+      required: true
+  - type: input
+    id: compiler
+    attributes:
+      label: Compiler and target
+      placeholder: clang 19, x86_64

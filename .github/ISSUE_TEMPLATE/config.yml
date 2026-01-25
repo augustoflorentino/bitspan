@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security issue
+    url: https://github.com/augustoflorentino/bitspan/security/advisories/new
+    about: Out-of-bounds access and the like, reported privately

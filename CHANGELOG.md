@@ -4,6 +4,8 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+- `bitf_fill`: set any run of bits to 0 or 1, such as the padding of a report
+
 ## 3.0.0 - 2026-01-30
 
 Incompatible with 2.x: the soname is now `libbitspan.so.3`.

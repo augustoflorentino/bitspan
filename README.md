@@ -12,6 +12,7 @@ Read and write integer fields of 1 to 64 bits at any bit offset of a byte buffer
 - `bitf_copy`: copy a run of bits of any length between two buffers at any bit offsets; runs
   that overlap inside one buffer are copied as if through a temporary, when `dst` and `src`
   are the same pointer
+- `bitf_fill`: set a run of bits to 0 or 1, whole bytes at a time where it can
 - no allocation, no dependencies beyond the C99 standard headers
 
 <picture>

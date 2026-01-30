@@ -316,12 +316,40 @@ static void test_copy_overlap(void)
                 }
 }
 
+static void test_fill(void)
+{
+    static const unsigned flag_sets[] = {BITF_LE, BITF_BE};
+    unsigned char got[BUF_LEN];
+    unsigned char want[BUF_LEN];
+    size_t off;
+    size_t n;
+    size_t i;
+    unsigned f;
+    int bit;
+
+    for (f = 0; f < 2u; f++)
+        for (bit = 0; bit < 2; bit++)
+            for (off = 0; off < BUF_LEN * 8u; off++)
+                for (n = 0; off + n <= BUF_LEN * 8u; n++) {
+                    fill_random(got, BUF_LEN);
+                    memcpy(want, got, BUF_LEN);
+                    for (i = 0; i < n; i++)
+                        ref_put_bit(want, off + i, flag_sets[f], (unsigned)bit);
+                    CHECK(bitf_fill(got, BUF_LEN, off, n, flag_sets[f], bit) == BITF_OK);
+                    CHECK(memcmp(got, want, BUF_LEN) == 0);
+                }
+    CHECK(bitf_fill(got, BUF_LEN, 1, BUF_LEN * 8u, BITF_LE, 1) == BITF_ERR_BOUNDS);
+    CHECK(bitf_fill(got, BUF_LEN, 0, 1, BITF_SIGNED, 1) == BITF_ERR_ARG);
+    CHECK(bitf_fill(NULL, BUF_LEN, 0, 1, BITF_LE, 1) == BITF_ERR_ARG);
+}
+
 int main(void)
 {
     test_version();
     test_unchecked_writes();
     test_copy();
     test_copy_overlap();
+    test_fill();
     test_exhaustive_get_set();
     test_known_values();
     test_signed_range();

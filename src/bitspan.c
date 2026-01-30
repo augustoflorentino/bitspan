@@ -1,5 +1,7 @@
 #include "bitspan/bitspan.h"
 
+#include <string.h>
+
 typedef char bitf_field_layout_check[sizeof(bitf_field_t) == sizeof(size_t) + 2 * sizeof(unsigned) ? 1 : -1];
 
 int bitf_check(size_t data_len, size_t bit_offset, unsigned bit_len, unsigned flags)
@@ -237,6 +239,41 @@ int bitf_copy(unsigned char *dst, size_t dst_len, size_t dst_offset, const unsig
         src_offset += chunk;
         bit_count -= chunk;
     }
+    return BITF_OK;
+}
+
+static size_t bitf_fill_edge(unsigned char *data, size_t bit_offset, size_t bit_count,
+                             unsigned flags, uint64_t ones)
+{
+    unsigned len = bit_count < 8u - bit_offset % 8u ? (unsigned)bit_count
+                                                    : 8u - (unsigned)(bit_offset % 8u);
+
+    bitf_set_unchecked(data, bit_offset, len, flags, ones);
+    return len;
+}
+
+int bitf_fill(unsigned char *data, size_t data_len, size_t bit_offset, size_t bit_count,
+              unsigned flags, int bit)
+{
+    uint64_t ones = bit ? UINT64_MAX : 0u;
+    size_t done;
+    size_t bytes;
+
+    if (data == NULL || (flags & ~(unsigned)BITF_BE) != 0u)
+        return BITF_ERR_ARG;
+    if (bitf_range_check(data_len, bit_offset, bit_count) != BITF_OK)
+        return BITF_ERR_BOUNDS;
+    if (bit_count > 0u && bit_offset % 8u != 0u) {
+        done = bitf_fill_edge(data, bit_offset, bit_count, flags, ones);
+        bit_offset += done;
+        bit_count -= done;
+    }
+    bytes = bit_count / 8u;
+    memset(data + bit_offset / 8u, bit ? 0xff : 0x00, bytes);
+    bit_offset += bytes * 8u;
+    bit_count -= bytes * 8u;
+    if (bit_count > 0u)
+        bitf_set_unchecked(data, bit_offset, (unsigned)bit_count, flags, ones);
     return BITF_OK;
 }
 

@@ -69,6 +69,8 @@ BITF_API int bitf_set_many(unsigned char *data, size_t data_len, const bitf_fiel
 BITF_API int bitf_copy(unsigned char *dst, size_t dst_len, size_t dst_offset,
                        const unsigned char *src, size_t src_len, size_t src_offset,
                        size_t bit_count, unsigned flags);
+BITF_API int bitf_fill(unsigned char *data, size_t data_len, size_t bit_offset, size_t bit_count,
+                       unsigned flags, int bit);
 BITF_API const char *bitf_strerror(int status);
 BITF_API int bitf_version(void);
 

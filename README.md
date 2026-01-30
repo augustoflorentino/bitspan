@@ -1,26 +1,65 @@
 # bitspan
 
-Read and write integer fields of 1 to 64 bits at any bit offset of a byte buffer.
+Reads and writes integer fields of 1 to 64 bits at any bit offset of a byte buffer. It was
+written for HID reports and works the same for binary file formats and bitstreams. C99, no
+allocation, no state.
 
-- two layouts: `BITF_LE` (least significant bit first, little endian: USB/HID, most
-  binary file formats) and `BITF_BE` (most significant bit first, big endian: network
-  protocols, bitstreams)
-- signed fields of any width with sign extension (`BITF_SIGNED`)
-- checked calls that never read or write outside the buffer, plus inline unchecked
-  readers and writers for hot loops after a single check
-- batch read and write of a field list, validated once
-- `bitf_copy`: copy a run of bits of any length between two buffers at any bit offsets; runs
-  that overlap inside one buffer are copied as if through a temporary, when `dst` and `src`
-  are the same pointer
-- `bitf_fill`: set a run of bits to 0 or 1, whole bytes at a time where it can
-- no allocation, no dependencies beyond the C99 standard headers
+[![release](https://img.shields.io/github/v/release/augustoflorentino/bitspan?style=flat-square)](https://github.com/augustoflorentino/bitspan/releases/latest)
+[![license](https://img.shields.io/github/license/augustoflorentino/bitspan?style=flat-square)](LICENSE)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/layout-dark.svg">
   <img src="docs/images/layout-light.svg" alt="A six-byte report read with bitf_get_many: two one-bit buttons, a signed 8-bit trigger, a signed 16-bit stick and a 16-bit counter" width="820">
 </picture>
 
-## Build and install
+That report, read by [`examples/basic.c`](examples/basic.c):
+
+```c
+static const unsigned char report[] = {0x05, 0x80, 0xff, 0x7f, 0x34, 0x12};
+static const bitf_field_t fields[] = {
+    {0, 1, BITF_LE},
+    {2, 1, BITF_LE},
+    {8, 8, BITF_LE | BITF_SIGNED},
+    {16, 16, BITF_LE | BITF_SIGNED},
+    {32, 16, BITF_LE},
+};
+static const char *const names[] = {"button a", "button b", "trigger", "stick x", "counter"};
+bitf_value_t values[5];
+size_t bad = 0;
+
+if (bitf_get_many(report, sizeof(report), fields, 5, values, &bad) != BITF_OK)
+    return 1;
+```
+
+```console
+$ ./basic
+button a 1
+button b 1
+trigger  -128
+stick x  32767
+counter  4660
+```
+
+## Why not C bit-fields
+
+Their layout is up to the compiler and they know nothing about byte order, so they cannot
+describe a report someone else defined. Every parser then grows its own shifts and masks, and
+those fail in the same places: a field crossing a byte boundary, sign extension of an odd width,
+MSB-first numbering, a width of 64. bitspan does that arithmetic once, checks it against the
+buffer length, and is tested and fuzzed on exactly those edges.
+
+## What is in it
+
+- two layouts: `BITF_LE`, least significant bit first (USB/HID, most file formats), and
+  `BITF_BE`, most significant bit first (network protocols, bitstreams)
+- signed fields of any width with `BITF_SIGNED`
+- checked calls that never touch memory outside the buffer, plus inline unchecked readers and
+  writers for hot loops that ran one check up front
+- lists of fields read or written in one call, validated before anything is written
+- `bitf_copy` for runs of any length between two buffers, overlap included, and `bitf_fill` to
+  set a run to 0 or 1
+
+## Building
 
 ```sh
 cmake -S . -B build -DBUILD_SHARED_LIBS=ON
@@ -28,66 +67,49 @@ cmake --build build
 cmake --install build --prefix /usr/local
 ```
 
-Use it from CMake:
+CMake projects use `find_package(bitspan REQUIRED)` and `bitspan::bitspan`; anything else gets
+the flags from `pkg-config --cflags --libs bitspan`.
 
-```cmake
-find_package(bitspan REQUIRED)
-target_link_libraries(app PRIVATE bitspan::bitspan)
-```
+To vendor it instead, run `scripts/amalgamate.sh` and copy `dist/bitspan/bitspan.h`. One `.c`
+file defines `BITF_IMPLEMENTATION` before including it; `BITF_STATIC` keeps the functions
+private to that file.
 
-Or with pkg-config:
+## API notes
+
+Every function is declared in [`include/bitspan/bitspan.h`](include/bitspan/bitspan.h).
+
+- `bit_offset` counts from the start of the buffer. With `BITF_LE`, bit 0 is the least
+  significant bit of byte 0; with `BITF_BE`, the most significant one.
+- Calls that can fail return `BITF_OK` or one of `BITF_ERR_ARG` (null pointer, width 0 or
+  above 64, unknown flag), `BITF_ERR_BOUNDS` (field outside the buffer) and `BITF_ERR_RANGE`
+  (value wider than the field); `bitf_strerror` turns them into text.
+- A failed call writes nothing. `bitf_set_many` checks every field and value first, and the
+  list calls report the first bad field through `out_bad_index`.
+- List values are `bitf_value_t`: `.s` for `BITF_SIGNED` fields, `.u` for the others.
+- `bitf_get_unchecked`, `bitf_set_unchecked` and the rest of that family trust that
+  `bitf_check` or `bitf_fields_check` ran before. The writer keeps only the low `bit_len` bits.
+- Names ending in `_` belong to the inline functions and may change in any release.
+- There is no state, so calls on different buffers can run in parallel.
+
+## Compatibility
+
+3.1 is the last feature release planned; from here on, fixes. Inside a major version no
+function, macro, flag or struct member goes away or changes meaning, and `bitf_field_t` keeps
+its layout. Anything due to be removed is marked deprecated in the [CHANGELOG](CHANGELOG.md) one
+major version earlier, and an incompatible release bumps both the major version and the soname.
+
+## Working on it
 
 ```sh
-cc app.c $(pkg-config --cflags --libs bitspan)
+cmake --preset dev && cmake --build build/dev && ctest --preset dev
+cmake --preset fuzz && cmake --build build/fuzz
 ```
 
-## Single-file form
+The `dev` preset turns on ASan, UBSan and `-Werror`; the `fuzz` one builds
+`build/fuzz/fuzz_roundtrip`. CI runs the `dev` preset, builds with MSVC at `/W4 /WX`, installs
+on Linux, macOS and Windows and links a program against the result, and compares the exported
+symbols and the ABI with the 3.0 baseline in `abi/`.
 
-`scripts/amalgamate.sh` writes `dist/bitspan/bitspan.h`. Copy it into your project and, in exactly
-one `.c` file:
-
-```c
-#define BITF_IMPLEMENTATION
-#include "bitspan/bitspan.h"
-```
-
-Define `BITF_STATIC` as well to keep every function private to that file.
-
-## Usage
-
-See [`examples/basic.c`](examples/basic.c). The header `include/bitspan/bitspan.h` is the
-API reference.
-
-Conventions:
-
-- every function that can fail returns `BITF_OK` or an error code; `bitf_strerror` describes it:
-  `BITF_ERR_ARG` (null pointer, width 0 or above 64, unknown flag), `BITF_ERR_BOUNDS` (field
-  outside the buffer), `BITF_ERR_RANGE` (value does not fit the field width)
-- on error nothing is written: `bitf_set_many` checks every field and value before writing
-- the list calls take an optional `out_bad_index`: when the error comes from a field, it gets
-  the index of the first field that failed
-- `bit_offset` counts bits from the start of the buffer; with `BITF_BE` bit 0 is the most
-  significant bit of the first byte, with `BITF_LE` it is the least significant one
-- the list calls exchange values as `bitf_value_t`: `.s` for fields with `BITF_SIGNED`, `.u`
-  for the others
-- names ending in `_` (`bitf_mask_`, `bitf_extend_`) are internal helpers of the inline
-  readers and writers and may change in any release
-- `bitf_get_unchecked`, `bitf_set_unchecked` and friends do no checking: call `bitf_check`
-  or `bitf_fields_check` first; the writer keeps only the low `bit_len` bits of the value
-- the library never allocates and keeps no state; calls on different buffers can run in parallel
-
-## Versioning
-
-Semantic Versioning, from 1.0.0 on. Within a major version:
-
-- the API and ABI only grow: no function, macro, flag or struct member is removed or changes
-  meaning, and the layout of `bitf_field_t` stays the same
-- a function due to go away is marked deprecated in the CHANGELOG first and removed only in the
-  next major version, together with a note on what to use instead
-- names ending in `_` are not covered
-
-Incompatible releases bump the major version and the soname. See [CHANGELOG.md](CHANGELOG.md).
-
-## License
-
-MIT, see [LICENSE](LICENSE).
+Bugs go to the [issues](https://github.com/augustoflorentino/bitspan/issues), anything that
+reads or writes out of bounds to [SECURITY.md](SECURITY.md). MIT licensed, see
+[LICENSE](LICENSE).

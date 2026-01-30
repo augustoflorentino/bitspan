@@ -13,7 +13,7 @@ int main(void)
         {32, 16, BITF_LE},
     };
     static const char *const names[] = {"button a", "button b", "trigger", "stick x", "counter"};
-    uint64_t values[5];
+    bitf_value_t values[5];
     size_t bad = 0;
     int status;
     int i;
@@ -25,9 +25,9 @@ int main(void)
     }
     for (i = 0; i < 5; i++) {
         if (fields[i].flags & BITF_SIGNED)
-            printf("%-8s %lld\n", names[i], (long long)(int64_t)values[i]);
+            printf("%-8s %lld\n", names[i], (long long)values[i].s);
         else
-            printf("%-8s %llu\n", names[i], (unsigned long long)values[i]);
+            printf("%-8s %llu\n", names[i], (unsigned long long)values[i].u);
     }
     return 0;
 }

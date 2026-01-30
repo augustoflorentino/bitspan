@@ -184,20 +184,26 @@ static void test_many(void)
         {24, 12, BITF_BE},
         {36, 4, BITF_BE | BITF_SIGNED},
     };
-    static const uint64_t values[] = {1, 0x55, (uint64_t)-300, 0xabc, (uint64_t)-2};
+    bitf_value_t values[5];
     unsigned char buf[5] = {0};
-    uint64_t out[5];
+    bitf_value_t out[5];
     static const bitf_field_t bad[] = {{0, 8, BITF_LE}, {8, 0, BITF_LE}, {16, 8, 0x10}};
     size_t min_len = 0;
     size_t bad_index = 99;
     size_t i;
 
+    values[0].u = 1;
+    values[1].u = 0x55;
+    values[2].s = -300;
+    values[3].u = 0xabc;
+    values[4].s = -2;
     CHECK(bitf_fields_check(fields, 5, &min_len, NULL) == BITF_OK && min_len == 5);
     CHECK(bitf_set_many(buf, sizeof(buf), fields, 5, values, NULL) == BITF_OK);
     CHECK(bitf_get_many(buf, sizeof(buf), fields, 5, out, &bad_index) == BITF_OK);
     CHECK(bad_index == 99);
     for (i = 0; i < 5; i++)
-        CHECK(out[i] == values[i]);
+        CHECK(out[i].u == values[i].u);
+    CHECK(out[2].s == -300 && out[4].s == -2);
     CHECK(bitf_get_many(buf, 4, fields, 5, out, &bad_index) == BITF_ERR_BOUNDS);
     CHECK(bad_index == 3);
     CHECK(bitf_set_many(buf, 2, fields, 5, values, &bad_index) == BITF_ERR_BOUNDS);
@@ -211,10 +217,12 @@ static void test_many(void)
 static void test_many_range_is_atomic(void)
 {
     static const bitf_field_t fields[] = {{0, 8, BITF_LE}, {8, 4, BITF_LE}};
-    static const uint64_t values[] = {0xaa, 0x1f};
+    bitf_value_t values[2];
     unsigned char buf[2] = {0x11, 0x22};
     size_t bad_index = 0;
 
+    values[0].u = 0xaa;
+    values[1].u = 0x1f;
     CHECK(bitf_set_many(buf, sizeof(buf), fields, 2, values, &bad_index) == BITF_ERR_RANGE);
     CHECK(bad_index == 1);
     CHECK(buf[0] == 0x11 && buf[1] == 0x22);

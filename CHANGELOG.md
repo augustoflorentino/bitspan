@@ -4,6 +4,17 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+Incompatible with 2.x: the soname is now `libbitspan.so.3`.
+
+- `bitf_get_many` and `bitf_set_many` take arrays of `bitf_value_t`, a union of `uint64_t u`
+  and `int64_t s`. Signed fields used to travel sign-extended in a `uint64_t`, and turning a
+  negative one back into `int64_t` with a cast is implementation-defined in C
+
+### Upgrading
+
+Declare the value arrays as `bitf_value_t`, read and write `.s` for fields with `BITF_SIGNED`
+and `.u` for the others.
+
 ## 2.0.0 - 2026-01-25
 
 Incompatible with 1.x: the soname is now `libbitspan.so.2`.

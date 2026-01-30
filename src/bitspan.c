@@ -28,6 +28,24 @@ int bitf_get(const unsigned char *data, size_t data_len, size_t bit_offset,
     return BITF_OK;
 }
 
+static int64_t bitf_to_signed(uint64_t value)
+{
+    return value <= (uint64_t)INT64_MAX ? (int64_t)value : -(int64_t)(~value) - 1;
+}
+
+static void bitf_store_value(bitf_value_t *out, const bitf_field_t *field, uint64_t raw)
+{
+    if (field->flags & BITF_SIGNED)
+        out->s = bitf_to_signed(raw);
+    else
+        out->u = raw;
+}
+
+static uint64_t bitf_raw_value(const bitf_value_t *value, const bitf_field_t *field)
+{
+    return (field->flags & BITF_SIGNED) ? (uint64_t)value->s : value->u;
+}
+
 int bitf_get_signed(const unsigned char *data, size_t data_len, size_t bit_offset,
                              unsigned bit_len, unsigned flags, int64_t *out_value)
 {
@@ -39,8 +57,7 @@ int bitf_get_signed(const unsigned char *data, size_t data_len, size_t bit_offse
     status = bitf_get(data, data_len, bit_offset, bit_len, flags | BITF_SIGNED, &value);
     if (status != BITF_OK)
         return status;
-    *out_value = value <= (uint64_t)INT64_MAX ? (int64_t)value
-                                              : -(int64_t)(~value) - 1;
+    *out_value = bitf_to_signed(value);
     return BITF_OK;
 }
 
@@ -136,7 +153,7 @@ static int bitf_fields_fit(size_t data_len, const bitf_field_t *fields, size_t f
 }
 
 int bitf_get_many(const unsigned char *data, size_t data_len, const bitf_field_t *fields,
-                  size_t fields_len, uint64_t *out_values, size_t *out_bad_index)
+                  size_t fields_len, bitf_value_t *out_values, size_t *out_bad_index)
 {
     size_t i;
     int status;
@@ -147,13 +164,14 @@ int bitf_get_many(const unsigned char *data, size_t data_len, const bitf_field_t
     if (status != BITF_OK)
         return status;
     for (i = 0; i < fields_len; i++)
-        out_values[i] = bitf_get_unchecked(data, fields[i].bit_offset, fields[i].bit_len,
-                                           fields[i].flags);
+        bitf_store_value(&out_values[i], &fields[i],
+                         bitf_get_unchecked(data, fields[i].bit_offset, fields[i].bit_len,
+                                            fields[i].flags));
     return BITF_OK;
 }
 
 int bitf_set_many(unsigned char *data, size_t data_len, const bitf_field_t *fields,
-                  size_t fields_len, const uint64_t *values, size_t *out_bad_index)
+                  size_t fields_len, const bitf_value_t *values, size_t *out_bad_index)
 {
     size_t i;
     int status;
@@ -164,11 +182,12 @@ int bitf_set_many(unsigned char *data, size_t data_len, const bitf_field_t *fiel
     if (status != BITF_OK)
         return status;
     for (i = 0; i < fields_len; i++)
-        if (!bitf_fits(values[i], fields[i].bit_len, fields[i].flags))
+        if (!bitf_fits(bitf_raw_value(&values[i], &fields[i]), fields[i].bit_len,
+                       fields[i].flags))
             return bitf_fail(BITF_ERR_RANGE, i, out_bad_index);
     for (i = 0; i < fields_len; i++)
         bitf_set_unchecked(data, fields[i].bit_offset, fields[i].bit_len, fields[i].flags,
-                           values[i]);
+                           bitf_raw_value(&values[i], &fields[i]));
     return BITF_OK;
 }
 

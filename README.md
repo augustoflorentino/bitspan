@@ -67,7 +67,8 @@ Conventions:
   the index of the first field that failed
 - `bit_offset` counts bits from the start of the buffer; with `BITF_BE` bit 0 is the most
   significant bit of the first byte, with `BITF_LE` it is the least significant one
-- `bitf_get_many` returns signed fields sign-extended in the `uint64_t`; cast to `int64_t`
+- the list calls exchange values as `bitf_value_t`: `.s` for fields with `BITF_SIGNED`, `.u`
+  for the others
 - names ending in `_` (`bitf_mask_`, `bitf_extend_`) are internal helpers of the inline
   readers and writers and may change in any release
 - `bitf_get_unchecked`, `bitf_set_unchecked` and friends do no checking: call `bitf_check`

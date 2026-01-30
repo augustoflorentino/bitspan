@@ -4,6 +4,8 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+## 3.0.0 - 2026-01-30
+
 Incompatible with 2.x: the soname is now `libbitspan.so.3`.
 
 - `bitf_get_many` and `bitf_set_many` take arrays of `bitf_value_t`, a union of `uint64_t u`

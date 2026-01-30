@@ -1,0 +1,164 @@
+<abi-corpus version='3.0' architecture='elf-amd-x86_64' soname='libbitspan.so.3' tracking-non-reachable-types='yes'>
+  <elf-needed>
+    <dependency name='libc.so.6'/>
+  </elf-needed>
+  <elf-function-symbols>
+    <elf-symbol name='bitf_check' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='bitf_copy' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='bitf_fields_check' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='bitf_get' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='bitf_get_many' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='bitf_get_signed' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='bitf_set' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='bitf_set_many' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='bitf_set_signed' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='bitf_strerror' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='bitf_version' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+  </elf-function-symbols>
+  <abi-types>
+    <pointer-type-def type-id='type-id-1' size-in-bits='64' hash='937f99ed7f693623' id='type-id-2'/>
+    <type-decl name='char' size-in-bits='8' hash='65b2d157027b431a' id='type-id-3'/>
+    <qualified-type-def type-id='type-id-4' const='yes' hash='36dfc36f3cd3cb98' id='type-id-5'/>
+    <pointer-type-def type-id='type-id-5' size-in-bits='64' hash='fa45b839161ef67f' id='type-id-6'/>
+    <qualified-type-def type-id='type-id-1' const='yes' hash='e4e9f8757429db2e' id='type-id-7'/>
+    <pointer-type-def type-id='type-id-7' size-in-bits='64' hash='9873c167002b1b19' id='type-id-8'/>
+    <qualified-type-def type-id='type-id-3' const='yes' hash='45ae2830e476ce98' id='type-id-9'/>
+    <pointer-type-def type-id='type-id-9' size-in-bits='64' hash='83a5509e2ae27d75' id='type-id-10'/>
+    <qualified-type-def type-id='type-id-11' const='yes' hash='1341ea448978b3ff' id='type-id-12'/>
+    <pointer-type-def type-id='type-id-12' size-in-bits='64' hash='945d60bbed1a29fa' id='type-id-13'/>
+    <function-type size-in-bits='64' hash='1d2a0e161d00b727' id='type-id-14'>
+      <parameter type-id='type-id-15'/>
+      <return type-id='type-id-10'/>
+    </function-type>
+    <function-type size-in-bits='64' hash='b7e0f80e6a5ec117' id='type-id-16'>
+      <parameter type-id='type-id-6'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-18'/>
+      <parameter type-id='type-id-18'/>
+      <return type-id='type-id-15'/>
+    </function-type>
+    <function-type size-in-bits='64' hash='8cdef2ee8dc89cd1' id='type-id-19'>
+      <parameter type-id='type-id-13'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-6'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-2'/>
+      <parameter type-id='type-id-18'/>
+      <return type-id='type-id-15'/>
+    </function-type>
+    <function-type size-in-bits='64' hash='2aa4114e8b54b257' id='type-id-20'>
+      <parameter type-id='type-id-13'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-21'/>
+      <parameter type-id='type-id-21'/>
+      <parameter type-id='type-id-22'/>
+      <return type-id='type-id-15'/>
+    </function-type>
+    <function-type size-in-bits='64' hash='8b0a2d6959d23d00' id='type-id-23'>
+      <parameter type-id='type-id-13'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-21'/>
+      <parameter type-id='type-id-21'/>
+      <parameter type-id='type-id-24'/>
+      <return type-id='type-id-15'/>
+    </function-type>
+    <function-type size-in-bits='64' hash='dfb01146f7ac3565' id='type-id-25'>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-21'/>
+      <parameter type-id='type-id-21'/>
+      <return type-id='type-id-15'/>
+    </function-type>
+    <function-type size-in-bits='64' hash='bc86b951be9389fa' id='type-id-26'>
+      <parameter type-id='type-id-27'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-6'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-8'/>
+      <parameter type-id='type-id-18'/>
+      <return type-id='type-id-15'/>
+    </function-type>
+    <function-type size-in-bits='64' hash='39c49c8be3ebdfbc' id='type-id-28'>
+      <parameter type-id='type-id-27'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-13'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-21'/>
+      <return type-id='type-id-15'/>
+    </function-type>
+    <function-type size-in-bits='64' hash='1423844bc458ac28' id='type-id-29'>
+      <parameter type-id='type-id-27'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-21'/>
+      <parameter type-id='type-id-21'/>
+      <parameter type-id='type-id-30'/>
+      <return type-id='type-id-15'/>
+    </function-type>
+    <function-type size-in-bits='64' hash='7b54034310eb91f9' id='type-id-31'>
+      <parameter type-id='type-id-27'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-17'/>
+      <parameter type-id='type-id-21'/>
+      <parameter type-id='type-id-21'/>
+      <parameter type-id='type-id-32'/>
+      <return type-id='type-id-15'/>
+    </function-type>
+    <function-type size-in-bits='64' hash='674662ad261e59a7' id='type-id-33'>
+      <return type-id='type-id-15'/>
+    </function-type>
+    <type-decl name='int' size-in-bits='32' hash='09d17c08f594edc7' id='type-id-15'/>
+    <pointer-type-def type-id='type-id-30' size-in-bits='64' hash='dd52c01115fe3642' id='type-id-22'/>
+    <type-decl name='long int' size-in-bits='64' hash='8aa1e1a2ab2c2d3e' id='type-id-34'/>
+    <pointer-type-def type-id='type-id-17' size-in-bits='64' hash='fce61c10660e5f2d' id='type-id-18'/>
+    <class-decl name='bitf_field' is-struct='yes' visibility='default' size-in-bits='128' hash='e9c5aa1089fa7ced' id='type-id-35'>
+      <data-member access='public' layout-offset-in-bits='0'>
+        <var-decl name='bit_offset' type-id='type-id-17' visibility='default'/>
+      </data-member>
+      <data-member access='public' layout-offset-in-bits='64'>
+        <var-decl name='bit_len' type-id='type-id-21' visibility='default'/>
+      </data-member>
+      <data-member access='public' layout-offset-in-bits='96'>
+        <var-decl name='flags' type-id='type-id-21' visibility='default'/>
+      </data-member>
+    </class-decl>
+    <typedef-decl name='__int64_t' type-id='type-id-34' size-in-bits='64' hash='567f7af3a2d00f27' id='type-id-36'/>
+    <typedef-decl name='__uint64_t' type-id='type-id-37' size-in-bits='64' hash='8b230c0ebd12548b' id='type-id-38'/>
+    <typedef-decl name='bitf_field_t' type-id='type-id-35' size-in-bits='128' hash='b09c8e7ec19b6bb9' id='type-id-4'/>
+    <typedef-decl name='bitf_value_t' type-id='type-id-39' size-in-bits='64' hash='20c3082d1de0e1ff' id='type-id-1'/>
+    <typedef-decl name='int64_t' type-id='type-id-36' size-in-bits='64' hash='567f7af3a2d00f27' id='type-id-30'/>
+    <typedef-decl name='size_t' type-id='type-id-37' size-in-bits='64' hash='8b230c0ebd12548b' id='type-id-17'/>
+    <typedef-decl name='uint64_t' type-id='type-id-38' size-in-bits='64' hash='8b230c0ebd12548b' id='type-id-32'/>
+    <pointer-type-def type-id='type-id-32' size-in-bits='64' hash='b7047e26270e9fce' id='type-id-24'/>
+    <union-decl name='bitf_value' visibility='default' size-in-bits='64' hash='f7a376730791b271' id='type-id-39'>
+      <data-member access='public'>
+        <var-decl name='u' type-id='type-id-32' visibility='default'/>
+      </data-member>
+      <data-member access='public'>
+        <var-decl name='s' type-id='type-id-30' visibility='default'/>
+      </data-member>
+    </union-decl>
+    <type-decl name='unsigned char' size-in-bits='8' hash='6ebac62b3366db68' id='type-id-11'/>
+    <pointer-type-def type-id='type-id-11' size-in-bits='64' hash='daf9679977094cab' id='type-id-27'/>
+    <type-decl name='unsigned int' size-in-bits='32' hash='e66b43f97c38e87a' id='type-id-21'/>
+    <type-decl name='unsigned long int' size-in-bits='64' hash='da551c1631705dfe' id='type-id-37'/>
+  </abi-types>
+  <abi-instr address-size='64' path='src/bitspan.c' language='LANG_C99'>
+      <function-decl name='bitf_strerror' type-id='type-id-14' mangled-name='bitf_strerror' visibility='default' binding='global' size-in-bits='64' elf-symbol-id='bitf_strerror'/>
+      <function-decl name='bitf_check' type-id='type-id-25' mangled-name='bitf_check' visibility='default' binding='global' size-in-bits='64' elf-symbol-id='bitf_check'/>
+      <function-decl name='bitf_copy' type-id='type-id-28' mangled-name='bitf_copy' visibility='default' binding='global' size-in-bits='64' elf-symbol-id='bitf_copy'/>
+      <function-decl name='bitf_fields_check' type-id='type-id-16' mangled-name='bitf_fields_check' visibility='default' binding='global' size-in-bits='64' elf-symbol-id='bitf_fields_check'/>
+      <function-decl name='bitf_get' type-id='type-id-23' mangled-name='bitf_get' visibility='default' binding='global' size-in-bits='64' elf-symbol-id='bitf_get'/>
+      <function-decl name='bitf_get_many' type-id='type-id-19' mangled-name='bitf_get_many' visibility='default' binding='global' size-in-bits='64' elf-symbol-id='bitf_get_many'/>
+      <function-decl name='bitf_get_signed' type-id='type-id-20' mangled-name='bitf_get_signed' visibility='default' binding='global' size-in-bits='64' elf-symbol-id='bitf_get_signed'/>
+      <function-decl name='bitf_set' type-id='type-id-31' mangled-name='bitf_set' visibility='default' binding='global' size-in-bits='64' elf-symbol-id='bitf_set'/>
+      <function-decl name='bitf_set_many' type-id='type-id-26' mangled-name='bitf_set_many' visibility='default' binding='global' size-in-bits='64' elf-symbol-id='bitf_set_many'/>
+      <function-decl name='bitf_set_signed' type-id='type-id-29' mangled-name='bitf_set_signed' visibility='default' binding='global' size-in-bits='64' elf-symbol-id='bitf_set_signed'/>
+      <function-decl name='bitf_version' type-id='type-id-33' mangled-name='bitf_version' visibility='default' binding='global' size-in-bits='64' elf-symbol-id='bitf_version'/>
+  </abi-instr>
+</abi-corpus>

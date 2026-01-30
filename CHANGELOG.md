@@ -4,6 +4,8 @@ Each release lists what changed, what updating means for existing code, and ever
 
 ## Unreleased
 
+## 3.1.0 - 2026-01-30
+
 - `bitf_fill`: set any run of bits to 0 or 1, such as the padding of a report
 
 ## 3.0.0 - 2026-01-30
